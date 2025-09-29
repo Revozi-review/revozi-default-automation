@@ -164,6 +164,10 @@
                             <option value="reddit">Reddit</option>
                             <option value="telegram">Telegram</option>
                             <option value="pinterest">Pinterest</option>
+                            <option value="snapchat">Snapchat</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="quora">Quora</option>
+                            <option value="discord">Discord</option>
                         </select>
                         <select id="status-filter" onchange="filterPosts()">
                             <option value="all">All Status</option>
@@ -295,6 +299,13 @@
                             <option value="twitter">Twitter</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="telegram">Telegram</option>
+                            <option value="pinterest">Pinterest</option>
+                            <option value="snapchat">Snapchat</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="quora">Quora</option>
+                            <option value="discord">Discord</option>
                         </select>
                         <input type="text" id="engagement-user-search" placeholder="Search user..." onkeyup="searchEngagement()">
                     </div>
@@ -418,7 +429,146 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Repeat for other bots -->
+                    <div class="bot-card" data-bot="twitter">
+                        <div class="bot-header">
+                            <i class="fab fa-twitter"></i>
+                            <h3>Twitter Bot</h3>
+                            <span class="bot-status" id="twitter-status">🟢 Idle</span>
+                        </div>
+                        <div class="bot-stats">
+                            <div class="stat">
+                                <span>Last Run:</span>
+                                <span id="twitter-last-run">Never</span>
+                            </div>
+                            <div class="stat">
+                                <span>Success Rate:</span>
+                                <span id="twitter-success-rate">0%</span>
+                            </div>
+                        </div>
+                        <div class="bot-actions">
+                            <button class="btn btn-primary" onclick="runBot('twitter')">
+                                <i class="fas fa-play"></i> Run Now
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewBotLogs('twitter')">
+                                <i class="fas fa-eye"></i> View Logs
+                            </button>
+                            <button class="btn btn-warning" onclick="configureBotSettings('twitter')">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bot-card" data-bot="snapchat">
+                        <div class="bot-header">
+                            <i class="fab fa-snapchat"></i>
+                            <h3>Snapchat Bot</h3>
+                            <span class="bot-status" id="snapchat-status">🟢 Idle</span>
+                        </div>
+                        <div class="bot-stats">
+                            <div class="stat">
+                                <span>Last Run:</span>
+                                <span id="snapchat-last-run">Never</span>
+                            </div>
+                            <div class="stat">
+                                <span>Success Rate:</span>
+                                <span id="snapchat-success-rate">0%</span>
+                            </div>
+                        </div>
+                        <div class="bot-actions">
+                            <button class="btn btn-primary" onclick="runBot('snapchat')">
+                                <i class="fas fa-play"></i> Run Now
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewBotLogs('snapchat')">
+                                <i class="fas fa-eye"></i> View Logs
+                            </button>
+                            <button class="btn btn-warning" onclick="configureBotSettings('snapchat')">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bot-card" data-bot="linkedin">
+                        <div class="bot-header">
+                            <i class="fab fa-linkedin"></i>
+                            <h3>LinkedIn Bot</h3>
+                            <span class="bot-status" id="linkedin-status">🟢 Idle</span>
+                        </div>
+                        <div class="bot-stats">
+                            <div class="stat">
+                                <span>Last Run:</span>
+                                <span id="linkedin-last-run">Never</span>
+                            </div>
+                            <div class="stat">
+                                <span>Success Rate:</span>
+                                <span id="linkedin-success-rate">0%</span>
+                            </div>
+                        </div>
+                        <div class="bot-actions">
+                            <button class="btn btn-primary" onclick="runBot('linkedin')">
+                                <i class="fas fa-play"></i> Run Now
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewBotLogs('linkedin')">
+                                <i class="fas fa-eye"></i> View Logs
+                            </button>
+                            <button class="btn btn-warning" onclick="configureBotSettings('linkedin')">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bot-card" data-bot="quora">
+                        <div class="bot-header">
+                            <i class="fab fa-quora"></i>
+                            <h3>Quora Bot</h3>
+                            <span class="bot-status" id="quora-status">🟢 Idle</span>
+                        </div>
+                        <div class="bot-stats">
+                            <div class="stat">
+                                <span>Last Run:</span>
+                                <span id="quora-last-run">Never</span>
+                            </div>
+                            <div class="stat">
+                                <span>Success Rate:</span>
+                                <span id="quora-success-rate">0%</span>
+                            </div>
+                        </div>
+                        <div class="bot-actions">
+                            <button class="btn btn-primary" onclick="runBot('quora')">
+                                <i class="fas fa-play"></i> Run Now
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewBotLogs('quora')">
+                                <i class="fas fa-eye"></i> View Logs
+                            </button>
+                            <button class="btn btn-warning" onclick="configureBotSettings('quora')">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bot-card" data-bot="discord">
+                        <div class="bot-header">
+                            <i class="fab fa-discord"></i>
+                            <h3>Discord Bot</h3>
+                            <span class="bot-status" id="discord-status">🟢 Idle</span>
+                        </div>
+                        <div class="bot-stats">
+                            <div class="stat">
+                                <span>Last Run:</span>
+                                <span id="discord-last-run">Never</span>
+                            </div>
+                            <div class="stat">
+                                <span>Success Rate:</span>
+                                <span id="discord-success-rate">0%</span>
+                            </div>
+                        </div>
+                        <div class="bot-actions">
+                            <button class="btn btn-primary" onclick="runBot('discord')">
+                                <i class="fas fa-play"></i> Run Now
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewBotLogs('discord')">
+                                <i class="fas fa-eye"></i> View Logs
+                            </button>
+                            <button class="btn btn-warning" onclick="configureBotSettings('discord')">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="cron-schedule">
                     <h3>Cron Schedule</h3>
@@ -897,6 +1047,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <option value="reddit">Reddit</option>
             <option value="telegram">Telegram</option>
             <option value="pinterest">Pinterest</option>
+            <option value="snapchat">Snapchat</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="quora">Quora</option>
+            <option value="discord">Discord</option>
             <option value="gmb">GMB</option>
           </select>
         </div>

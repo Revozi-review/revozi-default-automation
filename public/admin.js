@@ -212,7 +212,7 @@ async function updateDashboardCharts(engagementStats, rewardStats) {
 
 function updateBotStatusOverview(botStatus) {
   const container = document.getElementById("bot-status-overview")
-  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb"]
+  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb", "snapchat", "linkedin", "quora", "discord"]
 
   container.innerHTML = ""
 
@@ -1297,6 +1297,10 @@ function getBotCronSchedule(bot) {
     telegram: "20 * * * *",
     pinterest: "50 * * * *",
     gmb: "45 * * * *",
+    snapchat: "0,30 * * * *",
+    linkedin: "15,45 * * * *",
+    quora: "10,50 * * * *",
+    discord: "5,25 * * * *",
   }
   return schedules[bot] || "*/30 * * * *" // fallback
 }
@@ -1400,7 +1404,7 @@ async function runBot(botName) {
 async function runAllBots() {
   if (!confirm("Are you sure you want to run all bots?")) return
 
-  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb"]
+  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb", "snapchat", "linkedin", "quora", "discord"]
 
   for (const bot of bots) {
     await runBot(bot)

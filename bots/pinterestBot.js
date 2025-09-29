@@ -52,6 +52,48 @@ async function postPin() {
   }
 }
 
+async function getBoards() {
+  try {
+    const resp = await axios.get(
+      'https://api.pinterest.com/v5/boards',
+      {
+        headers: {
+          Authorization: `Bearer ${pinterestToken}`
+        }
+      }
+    );
+    logger.info('[PinterestBot] Boards retrieved successfully');
+    await logToSupabase({ action: 'getBoards', response: resp.data });
+    return resp.data;
+  } catch (error) {
+    const msg = error.response?.data?.message || error.message;
+    logger.error(`[PinterestBot] getBoards error: ${msg}`);
+    await logToSupabase({ action: 'getBoards', error: msg });
+    throw error;
+  }
+}
+
+async function getPins() {
+  try {
+    const resp = await axios.get(
+      `https://api.pinterest.com/v5/boards/${pinterestBoardId}/pins`,
+      {
+        headers: {
+          Authorization: `Bearer ${pinterestToken}`
+        }
+      }
+    );
+    logger.info('[PinterestBot] Pins retrieved successfully');
+    await logToSupabase({ action: 'getPins', response: resp.data });
+    return resp.data;
+  } catch (error) {
+    const msg = error.response?.data?.message || error.message;
+    logger.error(`[PinterestBot] getPins error: ${msg}`);
+    await logToSupabase({ action: 'getPins', error: msg });
+    throw error;
+  }
+}
+
 async function runPinterestBot() {
   logger.info('[PinterestBot] Starting automation task');
   if (!pinterestToken || !pinterestBoardId) {
@@ -62,11 +104,19 @@ async function runPinterestBot() {
   }
 
   try {
+    // Get boards info
+    await getBoards();
+    
+    // Post a pin
     await postPin();
+    
+    // Get pins from board
+    await getPins();
+    
     logger.info('[PinterestBot] Task complete');
     await logToSupabase({ action: 'runPinterestBot', status: 'complete' });
   } catch (error) {
-    // Already logged in postPin
+    // Already logged in individual functions
   }
 }
 
