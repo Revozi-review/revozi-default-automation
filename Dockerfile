@@ -1,4 +1,3 @@
-  GNU nano 6.2                                                                                         Dockerfile                                                                                                  
 
 # Use official Node.js LTS image
 FROM node:20
