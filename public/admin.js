@@ -957,7 +957,7 @@ async function issueReward() {
 // Engagement View
 async function loadEngagementView() {
   try {
-    const engagementData = await fetchAPI("/admin/engagement")
+    const engagementData = await fetchAPI("/admin/engagement-stats")
     const topUsers = await fetchAPI("/admin/top-users")
 
     renderEngagementTable(engagementData)
@@ -1031,7 +1031,7 @@ async function filterEngagement() {
   const params = platformFilter !== "all" ? `?platform=${platformFilter}` : ""
 
   try {
-    const engagementData = await fetchAPI(`/admin/engagement${params}`)
+    const engagementData = await fetchAPI(`/admin/engagement-stats${params}`)
     renderEngagementTable(engagementData)
   } catch (error) {
     showToast("Failed to filter engagement data", "error")
@@ -1043,7 +1043,7 @@ async function searchEngagement() {
   const params = searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""
 
   try {
-    const engagementData = await fetchAPI(`/admin/engagement${params}`)
+    const engagementData = await fetchAPI(`/admin/engagement-stats${params}`)
     renderEngagementTable(engagementData)
   } catch (error) {
     showToast("Failed to search engagement data", "error")
