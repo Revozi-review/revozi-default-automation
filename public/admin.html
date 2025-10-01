@@ -1038,8 +1038,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div style="margin-bottom: 16px;">
           <label style="display: block; margin-bottom: 6px; font-weight: bold;">Platform</label>
-          <select name="platform" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;">
-            <option value="">Select platform</option>
+          <select name="platform" multiple required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; height: 160px;">
+            
             <option value="instagram">Instagram</option>
             <option value="twitter">Twitter</option>
             <option value="tiktok">TikTok</option>
@@ -1052,7 +1052,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <option value="quora">Quora</option>
             <option value="discord">Discord</option>
             <option value="gmb">GMB</option>
-          </select>
+            </select>
+
         </div>
 
         <div style="margin-bottom: 16px;">
@@ -1096,24 +1097,36 @@ document.addEventListener('DOMContentLoaded', () => {
       </form>
     </div>
     `);
-    document.getElementById('add-post-form').onsubmit = async function(e) {
-      e.preventDefault();
-      const fd = new FormData(this);
-      const payload = Object.fromEntries(fd.entries());
-      // Convert scheduled_at to ISO string
-      if (payload.scheduled_at) {
-        payload.scheduled_at = new Date(payload.scheduled_at).toISOString();
-      }
-      try {
-        await fetch('/admin/schedule-post', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify(payload)
-        });
-        closeModal();
-        location.reload();
-      } catch {}
-    };
+document.getElementById('add-post-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const fd = new FormData(this);
+  const payload = Object.fromEntries(fd.entries());
+
+  // Get multiple platforms
+  const platforms = Array.from(this.querySelector('[name="platform"]').selectedOptions).map(opt => opt.value);
+
+  // Convert scheduled_at to ISO string
+  if (payload.scheduled_at) {
+    payload.scheduled_at = new Date(payload.scheduled_at).toISOString();
+  }
+
+  try {
+    // Loop through each platform and send request
+    for (const platform of platforms) {
+      const body = { ...payload, platform };
+      await fetch('/admin/schedule-post', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+    }
+    closeModal();
+    location.reload();
+  } catch (err) {
+    console.error("Failed to schedule posts", err);
+  }
+};
+
   };
 
   // --- Issue Reward Modal ---
