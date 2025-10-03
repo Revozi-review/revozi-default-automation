@@ -12,5 +12,13 @@ function log(message) {
 
 module.exports = {
   info: (msg) => log(`INFO: ${msg}`),
+  warn: (msg) => log(`WARN: ${msg}`),
   error: (msg) => log(`ERROR: ${msg}`),
+  debug: (msg) => {
+    // Only output debug messages when DEBUG env is set to true
+    if (process.env.DEBUG && (process.env.DEBUG === 'true' || process.env.DEBUG === '1')) {
+      log(`DEBUG: ${msg}`);
+    }
+  },
 };
+

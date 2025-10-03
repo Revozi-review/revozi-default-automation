@@ -68,6 +68,7 @@ router.post('/blog/publish-now', blogController.publishNow);
 
 // Engagement routes
 router.post('/engagement', engagementController.engagementCallback);
+router.get('/engagements', engagementController.getAllEngagements);
 
 // Analytics routes
 router.get('/engagement-stats', analyticsController.getEngagementStats);

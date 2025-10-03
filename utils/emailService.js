@@ -8,8 +8,8 @@ function getTransporter() {
 
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || '587', 10);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
 
   if (!host || !user || !pass) {
     throw new Error('SMTP configuration missing (SMTP_HOST, SMTP_USER, SMTP_PASS)');

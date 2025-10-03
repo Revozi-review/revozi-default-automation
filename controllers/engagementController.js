@@ -58,3 +58,18 @@ exports.engagementCallback = async (req, res) => {
     return res.status(500).json({ error: 'Failed to record engagement', detail: err.message });
   }
 };
+exports.getAllEngagements = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('engagements')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return res.json({ engagements: data });
+  } catch (err) {
+    logger.error(`[ENGAGEMENT_GET_ALL] ${err.message}`);
+    return res.status(500).json({ error: 'Failed to fetch engagements', detail: err.message });
+  }
+};

@@ -28,14 +28,31 @@ exports.getRewardStats = async (req, res) => {
 // 🧑‍💼 3. Top users by total engagement
 exports.getTopUsers = async (req, res) => {
   try {
-    const { data, error } = await supabase.rpc('top_engaged_users');
+    const { data, error } = await supabase
+      .from('engagements')
+      .select('user_id, likes, shares, comments, views')
+    
     if (error) throw error;
-    res.json({ top_users: data });
+
+    // Aggregate engagement scores in Node.js
+    const userStats = data.reduce((acc, e) => {
+      const score = e.likes + e.shares + e.comments + e.views;
+      acc[e.user_id] = (acc[e.user_id] || 0) + score;
+      return acc;
+    }, {});
+
+    const topUsers = Object.entries(userStats)
+      .map(([user_id, total]) => ({ user_id, total_engagement: total }))
+      .sort((a, b) => b.total_engagement - a.total_engagement)
+      .slice(0, 10); // top 10
+
+    res.json({ top_users: topUsers });
   } catch (err) {
     logger.error(`[ANALYTICS] Top users error: ${err.message}`);
-    res.status(500).json({ error: 'Failed to fetch top users' });
+    res.status(500).json({ error: 'Failed to fetch top users', detail: err.message });
   }
 };
+
 // 🎁 4. Full reward list
 exports.getAllRewards = async (req, res) => {
   try {
