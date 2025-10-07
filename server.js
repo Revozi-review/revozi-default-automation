@@ -32,6 +32,16 @@ app.use(express.urlencoded({ extended: true })); // needed for Twilio webhook
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 1000 });
 app.use(limiter);
 
+// Add geo-detection middleware
+const geoip = require('geoip-lite');
+app.use((req, res, next) => {
+  // Try X-Forwarded-For first (for proxies)
+  const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+  const geo = geoip.lookup(ip);
+  req.geo = geo?.country || 'US'; // Default to US if lookup fails
+  next();
+});
+
 app.use("/auth", authRoutes);
 app.use("/trap", trapRoutes);
 app.use("/admin", adminRoutes);

@@ -23,9 +23,15 @@ exports.schedulePost = async (req, res) => {
   }
 
   try {
-    // 1. Generate AI Caption
-    const caption = await generateCaption(media_prompt, platform);
-    logger.info(`[SCHEDULE_POST] Caption generated for ${platform}`);
+    // 1. Generate AI Caption with multi-language support
+    const { languages = process.env.SUPPORTED_LANGS?.split(',') } = req.body;
+    const generatedContent = await generateCaption({
+      prompt: media_prompt,
+      platform,
+      languages,
+      geo: req.geoRegion
+    });
+    logger.info(`[SCHEDULE_POST] Multi-language captions generated for ${platform}`);
 
     // 2. Decide if we need to generate media
     let finalMediaUrl = media_url;
@@ -55,17 +61,25 @@ exports.schedulePost = async (req, res) => {
     // 3. Save to generated_posts
     await supabase.from('generated_posts').insert({
       platform,
-      caption,
       media_prompt,
       media_url: finalMediaUrl,
       queued: true,
+      metadata: {
+        captions: generatedContent.captions,
+        transcripts: generatedContent.transcripts
+      },
+      extras: generatedContent.extras
     });
 
     // 4. Save to post_queue
     const { error } = await supabase.from('post_queue').insert({
       platform,
       media_url: finalMediaUrl,
-      caption,
+      metadata: {
+        captions: generatedContent.captions,
+        transcripts: generatedContent.transcripts
+      },
+      extras: generatedContent.extras,
       priority: 0,
       scheduled_at: scheduled_at || new Date(),
     });
@@ -79,7 +93,7 @@ exports.schedulePost = async (req, res) => {
   }
 };
 
-// 2. Preview caption (no queue)
+// 2. Preview caption with multi-language support (no queue)
 exports.previewCaption = async (req, res) => {
   const { platform, prompt } = req.body;
   if (!platform || !prompt) {
@@ -87,11 +101,21 @@ exports.previewCaption = async (req, res) => {
   }
 
   try {
-    const caption = await generateCaption(prompt, platform);
-    res.json({ platform, prompt, caption });
+    const { languages = process.env.SUPPORTED_LANGS?.split(',') } = req.body;
+    const generatedContent = await generateCaption({
+      prompt,
+      platform,
+      languages,
+      geo: req.geoRegion
+    });
+    res.json({
+      platform,
+      prompt,
+      ...generatedContent
+    });
   } catch (err) {
     logger.error(`[PREVIEW_CAPTION] ${err.stack}`);
-    res.status(500).json({ error: 'Failed to generate caption' });
+    res.status(500).json({ error: 'Failed to generate multi-language caption' });
   }
 };
 
@@ -158,7 +182,7 @@ exports.retryByPlatform = async (req, res) => {
   }
 };
 
-// 5. View full post queue
+// 5. View full post queue with language support
 exports.getPostQueue = async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -167,10 +191,60 @@ exports.getPostQueue = async (req, res) => {
       .order('scheduled_at', { ascending: true });
 
     if (error) return res.status(500).json({ error: error.message });
-    res.json(data);
+
+    // Handle language selection and fallback
+    const localizedData = data.map(post => {
+      const captions = post.metadata?.captions || { en: post.caption }; // Fallback for legacy posts
+      const transcripts = post.metadata?.transcripts || {};
+      const geoAware = post.extras?.geoAware || {};
+
+      return {
+        ...post,
+        caption: captions[req.targetLang] || captions.en, // Fallback to English
+        transcript: transcripts[req.targetLang] || transcripts.en,
+        geoMessage: geoAware[req.targetLang] || geoAware.en,
+        originalMetadata: post.metadata, // Keep full metadata for reference
+        originalExtras: post.extras
+      };
+    });
+
+    res.json(localizedData);
   } catch (err) {
     logger.error(`[GET_POST_QUEUE] ${err.stack}`);
     res.status(500).json({ error: 'Failed to load post queue' });
+  }
+};
+
+// 6. Get generated posts with language support
+exports.getGeneratedPosts = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('generated_posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    // Handle language selection and fallback
+    const localizedData = data.map(post => {
+      const captions = post.metadata?.captions || { en: post.caption }; // Fallback for legacy posts
+      const transcripts = post.metadata?.transcripts || {};
+      const geoAware = post.extras?.geoAware || {};
+
+      return {
+        ...post,
+        caption: captions[req.targetLang] || captions.en, // Fallback to English
+        transcript: transcripts[req.targetLang] || transcripts.en,
+        geoMessage: geoAware[req.targetLang] || geoAware.en,
+        originalMetadata: post.metadata, // Keep full metadata for reference
+        originalExtras: post.extras
+      };
+    });
+
+    res.json(localizedData);
+  } catch (err) {
+    logger.error(`[GET_GENERATED_POSTS] ${err.stack}`);
+    res.status(500).json({ error: 'Failed to load generated posts' });
   }
 };
 
