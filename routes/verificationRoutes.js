@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getUserRole } = require('../utils/permissions');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 // Get all roles
 router.get('/roles', async (req, res) => {

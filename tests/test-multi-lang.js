@@ -34,7 +34,7 @@ jest.mock('../services/openaiClient', () => ({
 jest.mock('../utils/logger');
 
 // Import mocked supabase after mocking
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 describe('Multi-Language Support', () => {
   const mockEnglishCaption = "Amazing sunset view!";

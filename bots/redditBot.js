@@ -1,6 +1,6 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 const redditToken = process.env.REDDIT_ACCESS_TOKEN;
 const redditUser = process.env.REDDIT_USER;

@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const logger = require('../utils/logger');
 const botMap = require('../bots/botMap');
 

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 const pinterestToken = process.env.PINTEREST_ACCESS_TOKEN;
 const pinterestBoardId = process.env.PINTEREST_BOARD_ID;

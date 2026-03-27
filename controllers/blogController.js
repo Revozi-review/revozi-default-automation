@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const logger = require('../utils/logger');
 const { publishPendingBlogs } = require('../blog/blogScheduler');
 const {generateImageFromPrompt} = require('../services/replicateService');

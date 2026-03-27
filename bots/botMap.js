@@ -7,8 +7,4 @@ module.exports = {
   reddit: require('./redditBot'),
   gmb: require('./gmbBot'),
   pinterest: require('./pinterestBot'),
-  snapchat: require('./snapchatBot'),
-  linkedin: require('./linkedinBot'),
-  quora: require('./quoraBot'),
-  discord: require('./discordBot'),
 };

@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 async function getLeaderboard(req, res) {
   try {

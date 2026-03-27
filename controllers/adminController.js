@@ -1,4 +1,4 @@
-const { supabase } = require("../services/supabaseClient")
+const { supabase } = require("../services/pgClient")
 const fs = require("fs")
 const path = require("path")
 const logger = require("../utils/logger")

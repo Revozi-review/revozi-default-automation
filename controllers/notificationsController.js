@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const logger = require('../utils/logger');
 
 // 🔹 Get all notifications for a user

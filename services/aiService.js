@@ -1,5 +1,5 @@
 const fallbackPrompts = require('./fallbackPrompts'); 
-const { supabase } = require('./supabaseClient');
+const { supabase } = require('./pgClient');
 const { openai } = require('./openaiClient');
 const logger = require('../utils/logger');
 const { translateText, batchTranslate, supportedLangs } = require('../utils/translate');

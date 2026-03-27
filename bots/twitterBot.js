@@ -2,7 +2,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const OAuth = require('oauth-1.0a');
 const logger = require('../utils/logger');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 async function logToSupabase(activity) {
   try {

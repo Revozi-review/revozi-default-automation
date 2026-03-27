@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const { generateCaption } = require('../services/aiService');
 const {
   generateImageFromPrompt,

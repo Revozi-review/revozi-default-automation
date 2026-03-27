@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 // Role-only helpers
 async function getUserRole(userId) {

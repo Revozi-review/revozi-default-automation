@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const { publishToMedium } = require('../services/mediumService');
 const { publishToSubstack } = require('../services/substackService');
 const { publishToReddit } = require('../services/redditService');

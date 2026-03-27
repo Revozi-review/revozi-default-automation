@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const runReminderCron = require('./reminderScheduler');
 
 // 🧹 Schedules both reminder + cleanup crons
