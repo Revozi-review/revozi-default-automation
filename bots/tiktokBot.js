@@ -23,9 +23,13 @@ async function getTrendingVideo() {
         'User-Agent': 'Mozilla/5.0',
         'Cookie': tiktokAuthHeader
       },
-      params: { count: 1 }
+      params: { count: 30, aid: 1988, app_name: 'tiktok_web', device_platform: 'web_pc' }
     });
     const video = resp.data?.itemList?.[0] || null;
+    if (!video) {
+        logger.warn('[TikTokBot] Empty trending video list returned.');
+        return null;
+    }
     logger.info(`[TikTokBot] Trending video: ${JSON.stringify(video)}`);
     await logToSupabase({ action: 'getTrending', video });
     return video;

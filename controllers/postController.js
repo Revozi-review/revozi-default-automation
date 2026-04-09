@@ -277,3 +277,15 @@ exports.deletePost = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete post' });
   }
 };
+// 8. Clear entire post queue
+exports.clearQueue = async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('post_queue').delete().neq('status', 'processing').select();
+    if (error) return res.status(500).json({ error: error.message });
+    logger.info(`[CLEAR_QUEUE] Post queue cleared by admin`);
+    res.json({ message: 'Queue cleared successfully', cleared: data ? data.length : 0 });
+  } catch (err) {
+    logger.error(`[CLEAR_QUEUE] ${err.stack}`);
+    res.status(500).json({ error: 'Failed to clear queue' });
+  }
+};

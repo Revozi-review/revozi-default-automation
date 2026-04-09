@@ -31,16 +31,16 @@ ${text}
 
 Translation:`;
 
-    const completion = await retry(() => openai.createCompletion({
+    const completion = await retry(() => openai.chat.completions.create({
       model: 'gpt-4',
-      prompt,
+      messages: [{ role: 'user', content: prompt }],
       temperature: 0.3, // Lower temperature for more accurate translations
       max_tokens: Math.min(text.length * 2, 2000), // Dynamic token limit based on input
       n: 1,
       presence_penalty: 0
     }), 2, 150);
 
-    const translation = completion?.data?.choices?.[0]?.text?.trim();
+    const translation = completion?.choices?.[0]?.message?.content?.trim();
     if (!translation) {
       logger.warn('Empty translation result', { text, targetLang, sourceLang });
       return text;

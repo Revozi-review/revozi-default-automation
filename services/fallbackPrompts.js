@@ -7,4 +7,5 @@ module.exports = {
   reddit: "Craft a casual Reddit-style caption for a community post.",
   gmb: "Create a professional description for a Google Business post.",
   pinterest: "Write a creative, inspirational caption for a Pinterest image.",
+  default: "Write a high-quality, engaging piece of content for this topic.",
 };

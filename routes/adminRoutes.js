@@ -46,6 +46,7 @@ router.post('/schedule-post', extractLangAndGeo, postController.schedulePost);
 router.post('/preview-caption', extractLangAndGeo, postController.previewCaption);
 router.post('/retry-failed', extractLangAndGeo, postController.retryFailedPosts);
 router.post('/retry-platform', extractLangAndGeo, postController.retryByPlatform);
+router.delete('/queue/clear', postController.clearQueue);
 router.get('/queue', extractLangAndGeo, postController.getPostQueue);
 router.get('/generated', extractLangAndGeo, postController.getGeneratedPosts);
 router.delete('/:id', postController.deletePost);
