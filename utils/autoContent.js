@@ -19,14 +19,14 @@ const MEDIA_POOL = [
 ];
 
 const TOPIC_POOL = [
-  'How Revozi helps businesses automate repetitive workflows and focus on growth',
-  'Why AI-powered business automation is the future — Revozi leads the way',
-  'Revozi empowers entrepreneurs to scale their operations without hiring more staff',
-  'The story behind Revozi — making business automation accessible to every company',
-  'How Revozi is disrupting traditional business software with intelligent AI automation',
-  'Save time, reduce costs, and grow faster — the Revozi promise for modern businesses',
-  'From manual to automated in minutes — how Revozi transforms business operations',
-  'Why thousands of businesses trust Revozi to run their workflows on autopilot',
+  'How Revozi helps SaaS teams manage Google Reviews on autopilot with AI',
+  'Stop losing customers to bad reviews — Revozi triage and responds before it hurts your rating',
+  'Why AI-powered review management is the competitive edge every SaaS company needs in 2025',
+  'Revozi turns your Google Reviews into actionable product insights automatically',
+  'How Revozi drafts personalized review responses in seconds so your team never misses one',
+  'The hidden cost of ignoring Google Reviews — and how Revozi solves it for SaaS teams',
+  'Revozi: from review chaos to full visibility — automated feedback analysis for SaaS',
+  'How top SaaS companies use Revozi to protect their reputation and grow 5-star ratings',
 ];
 
 let mediaIndex = Math.floor(Math.random() * MEDIA_POOL.length);
