@@ -1,11 +1,8 @@
 const { supabase } = require('../services/supabaseClient');
 const { generateCaption } = require('../services/aiService');
-const {
-  generateImageFromPrompt,
-  generateVideoFromPrompt,
-} = require('../services/replicateService');
+const { generateImageFromPrompt } = require('../services/openaiImageService');
+const { generateVideoFromPrompt } = require('../services/replicateService');
 const logger = require('../utils/logger');
-
 const axios = require('axios');
 
 // Helper: Decide media type based on platform

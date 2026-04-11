@@ -1,7 +1,7 @@
 const { supabase } = require('../services/supabaseClient');
 const logger = require('../utils/logger');
 const { publishPendingBlogs } = require('../blog/blogScheduler');
-const {generateImageFromPrompt} = require('../services/replicateService');
+const {generateImageFromPrompt} = require('../services/openaiImageService');
 const { generateBlogContent, markdownToHtml } = require('../services/aiService');
 
 
