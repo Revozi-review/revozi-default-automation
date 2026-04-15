@@ -1,5 +1,5 @@
 const fallbackPrompts = require('./fallbackPrompts'); 
-const { supabase } = require('./supabaseClient');
+const { supabase } = require('./pgClient');
 const { openai } = require('./openaiClient');
 const logger = require('../utils/logger');
 const { translateText, batchTranslate, supportedLangs } = require('../utils/translate');
@@ -113,10 +113,16 @@ async function generateCaption({ prompt, platform, languages = supportedLangs, g
     // Generate base English caption
     const aiResponse = await openai.chat.completions.create({
       model: 'gpt-4',
-      messages: [{ 
-        role: 'user', 
-        content: `Generate an engaging ${platform} caption for: ${finalPrompt}\n\nCaption:` 
-      }],
+      messages: [
+        {
+          role: 'system',
+          content: `You are a social media expert for Revozi — an AI-powered review management platform built for SaaS teams. Revozi automates Google Reviews management: it triages incoming reviews, analyzes customer feedback with AI, and drafts personalized responses so teams never miss a review. Always write content that promotes the Revozi brand and its mission to help SaaS companies protect their reputation and turn customer feedback into growth. Never mention any other brand name. Keep content authentic, engaging, and platform-appropriate.`
+        },
+        {
+          role: 'user',
+          content: `Generate an engaging ${platform} caption for: ${finalPrompt}\n\nCaption:`
+        }
+      ],
       temperature: 0.7
     });
 

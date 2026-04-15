@@ -1,4 +1,4 @@
-const { supabase } = require('./supabaseClient');
+const { supabase } = require('./pgClient');
 
 function computeBadge(points) {
   if (points >= 1000) return 'gold';

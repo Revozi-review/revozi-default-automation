@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const { generateCaption } = require('../services/aiService');
 const { generateImageFromPrompt } = require('../services/openaiImageService');
 const { generateVideoFromPrompt } = require('../services/replicateService');
@@ -245,22 +245,6 @@ exports.getGeneratedPosts = async (req, res) => {
   }
 };
 
-// 6. View generated posts
-exports.getGeneratedPosts = async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('generated_posts')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) return res.status(500).json({ error: error.message });
-    res.json(data);
-  } catch (err) {
-    logger.error(`[GET_GENERATED_POSTS] ${err.stack}`);
-    res.status(500).json({ error: 'Failed to fetch generated posts' });
-  }
-};
 
 // 7. Delete a post (cleanup or admin UI)
 exports.deletePost = async (req, res) => {
@@ -272,5 +256,17 @@ exports.deletePost = async (req, res) => {
   } catch (err) {
     logger.error(`[DELETE_POST] ${err.stack}`);
     res.status(500).json({ error: 'Failed to delete post' });
+  }
+};
+// 8. Clear entire post queue
+exports.clearQueue = async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('post_queue').delete().neq('status', 'processing').select();
+    if (error) return res.status(500).json({ error: error.message });
+    logger.info(`[CLEAR_QUEUE] Post queue cleared by admin`);
+    res.json({ message: 'Queue cleared successfully', cleared: data ? data.length : 0 });
+  } catch (err) {
+    logger.error(`[CLEAR_QUEUE] ${err.stack}`);
+    res.status(500).json({ error: 'Failed to clear queue' });
   }
 };

@@ -4,25 +4,24 @@ const nodemailer = require('nodemailer');
 let transporter;
 
 function getTransporter() {
-  if (transporter) return transporter;
-
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || '587', 10);
-  const user = process.env.EMAIL_USER;
-  const pass = process.env.EMAIL_PASS;
+  const user = process.env.EMAIL_USER || process.env.SMTP_USER;
+  const pass = process.env.EMAIL_PASS || process.env.SMTP_PASSWORD;
 
   if (!host || !user || !pass) {
     throw new Error('SMTP configuration missing (SMTP_HOST, SMTP_USER, SMTP_PASS)');
   }
 
-  transporter = nodemailer.createTransport({
+  return nodemailer.createTransport({
     host,
     port,
     secure: port === 465,
-    auth: { user, pass }
+    auth: { user, pass },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
-
-  return transporter;
 }
 
 async function sendEmail(to, subject, text) {

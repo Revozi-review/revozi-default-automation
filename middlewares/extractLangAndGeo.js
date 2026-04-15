@@ -1,4 +1,5 @@
 const { supportedLangs } = require('../utils/translate');
+
 /**
  * Middleware to extract language and geo params from query/body
  */

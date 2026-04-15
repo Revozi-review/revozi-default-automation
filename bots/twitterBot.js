@@ -2,7 +2,8 @@ const axios = require('axios');
 const crypto = require('crypto');
 const OAuth = require('oauth-1.0a');
 const logger = require('../utils/logger');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
+const { autoGenerateContent } = require('../utils/autoContent');
 
 async function logToSupabase(activity) {
   try {
@@ -58,7 +59,14 @@ async function runTwitterBot() {
       .limit(5);
 
     if (error) { logger.error(`[TwitterBot] Supabase error: ${error.message}`); return; }
-    if (!posts || posts.length === 0) { logger.info('[TwitterBot] No pending posts in queue'); return; }
+    if (!posts || posts.length === 0) {
+      logger.info('[TwitterBot] Queue empty — auto-generating Revozi content...');
+      const generated = await autoGenerateContent('twitter');
+      const result = await postTweet(generated.caption, cred);
+      logger.info(`[TwitterBot] Auto-generated tweet posted successfully`);
+      await logToSupabase({ action: 'postContent', text: generated.caption, resp: result });
+      return;
+    }
 
     logger.info(`[TwitterBot] Found ${posts.length} pending post(s)`);
 
@@ -67,7 +75,7 @@ async function runTwitterBot() {
         logger.info(`[TwitterBot] Attempting to tweet: ${post.caption}`);
         const result = await postTweet(post.caption, cred);
         logger.info(`[TwitterBot] SUCCESS - Tweeted: ${post.caption}`);
-        await supabase.from('post_queue').update({ status: 'published', last_attempt_at: new Date().toISOString() }).eq('id', post.id);
+        await supabase.from('post_queue').update({ status: 'posted', last_attempt_at: new Date().toISOString() }).eq('id', post.id);
         await logToSupabase({ action: 'postContent', text: post.caption, resp: result });
       } catch (err) {
         const errDetail = JSON.stringify(err.response?.data || err.message);

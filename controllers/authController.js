@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const generateToken = require('../utils/generateToken');
 const { triggerTrap } = require('../traps/magicLoginTrap');
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 
 exports.signup = async (req, res) => {
   const { name, email, password, phone } = req.body;

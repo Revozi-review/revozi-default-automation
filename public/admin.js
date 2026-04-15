@@ -58,6 +58,7 @@ function loadSection(section, pushState = true) {
     bots: "Bot Management",
     blogs: "Blog Management",
     settings: "System Settings",
+    logs: "System Logs",
   }
   document.getElementById("page-title").textContent = titles[section] || "Dashboard"
 
@@ -112,6 +113,9 @@ async function loadSectionData(section) {
         break
       case "settings":
         await loadSettingsView()
+        break
+      case "logs":
+        refreshLogs()
         break
       default:
         await loadDashboardView()
@@ -212,7 +216,7 @@ async function updateDashboardCharts(engagementStats, rewardStats) {
 
 function updateBotStatusOverview(botStatus) {
   const container = document.getElementById("bot-status-overview")
-  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb", "snapchat", "linkedin", "quora", "discord"]
+  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb"]
 
   container.innerHTML = ""
 
@@ -1252,7 +1256,13 @@ function updateCronTable(botsData) {
   const tbody = document.getElementById("cron-table-body")
   tbody.innerHTML = ""
 
-  Object.entries(botsData).forEach(([bot, data]) => {
+  const allBots = [
+    "instagram", "twitter", "tiktok", "facebook", "reddit", 
+    "telegram", "pinterest", "gmb"
+  ];
+
+  allBots.forEach(bot => {
+    const data = botsData[bot] || { status: 'idle', lastRun: null };
     const schedule = getBotCronSchedule(bot)
 
     const row = document.createElement("tr")
@@ -1297,10 +1307,6 @@ function getBotCronSchedule(bot) {
     telegram: "20 * * * *",
     pinterest: "50 * * * *",
     gmb: "45 * * * *",
-    snapchat: "0,30 * * * *",
-    linkedin: "15,45 * * * *",
-    quora: "10,50 * * * *",
-    discord: "5,25 * * * *",
   }
   return schedules[bot] || "*/30 * * * *" // fallback
 }
@@ -1404,7 +1410,7 @@ async function runBot(botName) {
 async function runAllBots() {
   if (!confirm("Are you sure you want to run all bots?")) return
 
-  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb", "snapchat", "linkedin", "quora", "discord"]
+  const bots = ["instagram", "twitter", "tiktok", "facebook", "reddit", "telegram", "pinterest", "gmb"]
 
   for (const bot of bots) {
     await runBot(bot)
@@ -1568,11 +1574,14 @@ async function generateBlog() {
     preview.innerHTML =
       '<div class="preview-placeholder"><i class="fas fa-spinner fa-spin"></i><p>Generating blog...</p></div>'
 
+    const title = `Generated Blog - ${new Date().toLocaleDateString()}`
+    const slug = title.toLowerCase().replace(/[\s\W-]+/g, '-')
     const result = await fetchAPI("/admin/blog", "POST", {
       prompt,
       length,
       tone,
-      title: `Generated Blog - ${new Date().toLocaleDateString()}`,
+      title,
+      slug,
       content: prompt,
     })
 
@@ -1629,11 +1638,14 @@ async function generateBlogFromModal() {
 
   try {
     showLoading()
+    const title = `Generated Blog - ${new Date().toLocaleDateString()}`
+    const slug = title.toLowerCase().replace(/[\s\W-]+/g, '-')
     await fetchAPI("/admin/blog", "POST", {
       prompt,
       length,
       tone,
-      title: `Generated Blog - ${new Date().toLocaleDateString()}`,
+      title,
+      slug,
       content: prompt,
     })
     showToast("Blog generated and saved successfully")
@@ -1710,7 +1722,10 @@ function attachSettingsEventListeners() {
   document.getElementById("log-type-filter").addEventListener("change", refreshLogs)
 }
 
-async function saveSettings() {
+async function saveSettings(event) {
+  const btn = event?.currentTarget || document.querySelector(".btn-success[onclick='saveSettings()']");
+  if (btn) btn.disabled = true;
+
   try {
     showLoading()
 
@@ -1734,13 +1749,14 @@ async function saveSettings() {
     showToast("Failed to save settings", "error")
   } finally {
     hideLoading()
+    if (btn) setTimeout(() => btn.disabled = false, 500);
   }
 }
 
 async function refreshLogs() {
   try {
     const logType = document.getElementById("log-type-filter").value
-    const logs = await fetchAPI(`/admin/logs?type=${logType}`)
+    const logs = await fetchAPI(`/admin/logs?filter=${logType}`)
     document.getElementById("system-logs-content").textContent = logs.content || logs.logs || "No logs available"
   } catch (error) {
     document.getElementById("system-logs-content").textContent = "Failed to load logs"

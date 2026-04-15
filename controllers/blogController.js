@@ -1,9 +1,9 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const logger = require('../utils/logger');
 const { publishPendingBlogs } = require('../blog/blogScheduler');
 const {generateImageFromPrompt} = require('../services/openaiImageService');
-const { generateBlogContent, markdownToHtml } = require('../services/aiService');
-
+const { generateBlogContent } = require('../services/aiService');
+const marked = require('marked');
 
 // Create new blog
 exports.createBlog = async (req, res) => {
@@ -26,12 +26,14 @@ exports.createBlog = async (req, res) => {
     // 🔹 (1) Generate blog content if missing OR force_generate is true
     if (!content_markdown || force_generate) {
       const blogPrompt = `Write a detailed, SEO-optimized blog post titled: "${title}"`;
-      content_markdown = await generateBlogContent(blogPrompt);
+      const generated = await generateBlogContent({ title, prompt: blogPrompt });
+      content_markdown = generated.metadata.content_markdown['en'] || generated.metadata.content_markdown;
+      if (!content_html) content_html = generated.metadata.content_html['en'] || generated.metadata.content_html;
     }
 
     // 🔹 (2) Generate HTML if missing OR force_generate is true
     if (!content_html || force_generate) {
-      content_html = await markdownToHtml(content_markdown);
+      content_html = marked.parse(content_markdown);
     }
 
     // 🔹 (3) Generate images if image_prompts is provided & image_urls missing or empty

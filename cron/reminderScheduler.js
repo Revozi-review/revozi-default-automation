@@ -1,4 +1,4 @@
-const { supabase } = require('../services/supabaseClient');
+const { supabase } = require('../services/pgClient');
 const { notifyTrap } = require('../services/notificationService');
 const logger = require('../utils/logger');
 
