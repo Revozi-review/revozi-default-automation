@@ -13,7 +13,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "pg": "^8.13.3",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "compression": "^1.7.4",
@@ -29,6 +28,7 @@
     "nodemailer": "^7.0.3",
     "oauth-1.0a": "^2.2.6",
     "openai": "^5.9.0",
+    "pg": "^8.13.3",
     "snoowrap": "^1.23.0",
     "twilio": "^5.7.1",
     "uuid": "^9.0.1"

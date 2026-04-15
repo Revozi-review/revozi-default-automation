@@ -298,22 +298,13 @@ exports.resumeBot = async (req, res) => {
   }
 };
 
-// Restart all cron jobs
-exports.restartCronJobs = async (req, res) => {
-  try {
-    await restartAllBots()
-    res.json({ message: 'All cron jobs restarted' })
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to restart cron jobs' })
-  }
-}
-
 // Get status of all bots
 exports.getBotStatus = async (req, res) => {
   try {
-    const { data } = await supabase.from('bot_status').select('*')
+    const { data, error } = await supabase.from('bot_status').select('*')
+    if (error) return res.status(500).json({ error: 'Failed to get statuses' })
     const statusMap = {}
-    data.forEach(entry => {
+    ;(data || []).forEach(entry => {
       statusMap[entry.bot_name] = {
         lastRun: entry.last_run,
         status: entry.status,

@@ -75,7 +75,7 @@ async function runTwitterBot() {
         logger.info(`[TwitterBot] Attempting to tweet: ${post.caption}`);
         const result = await postTweet(post.caption, cred);
         logger.info(`[TwitterBot] SUCCESS - Tweeted: ${post.caption}`);
-        await supabase.from('post_queue').update({ status: 'published', last_attempt_at: new Date().toISOString() }).eq('id', post.id);
+        await supabase.from('post_queue').update({ status: 'posted', last_attempt_at: new Date().toISOString() }).eq('id', post.id);
         await logToSupabase({ action: 'postContent', text: post.caption, resp: result });
       } catch (err) {
         const errDetail = JSON.stringify(err.response?.data || err.message);

@@ -248,22 +248,6 @@ exports.getGeneratedPosts = async (req, res) => {
   }
 };
 
-// 6. View generated posts
-exports.getGeneratedPosts = async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('generated_posts')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) return res.status(500).json({ error: error.message });
-    res.json(data);
-  } catch (err) {
-    logger.error(`[GET_GENERATED_POSTS] ${err.stack}`);
-    res.status(500).json({ error: 'Failed to fetch generated posts' });
-  }
-};
 
 // 7. Delete a post (cleanup or admin UI)
 exports.deletePost = async (req, res) => {

@@ -29,11 +29,12 @@ pool.on('error', (err) => {
  *                  .order() .limit() .range() .single() .maybeSingle()
  */
 function from(rawTableName) {
-  // All automation tables live in the automation schema.
-  // Public Revozi tables (users, workspaces) are accessed without prefix.
+  // All automation tables live in the public schema (created by Alembic migration
+  // a1b2c3d4e5f6 with schema='public'). Use the table name directly; PostgreSQL's
+  // default search_path resolves to public.
   const schemaTable = rawTableName.includes('.')
     ? rawTableName
-    : `automation.${rawTableName}`;
+    : rawTableName;
 
   let selectCols = '*';
   let insertData = null;
@@ -178,18 +179,23 @@ function from(rawTableName) {
       return builder;
     },
 
-    upsert: async (data) => {
+    upsert: async (data, options = {}) => {
       try {
         const rows = Array.isArray(data) ? data : [data];
+        // onConflict can be an array of column names or a comma-separated string
+        const conflictCols = options.onConflict
+          ? (Array.isArray(options.onConflict) ? options.onConflict : [options.onConflict])
+          : ['id'];
+        const conflictStr = conflictCols.join(', ');
         const results = [];
         for (const row of rows) {
           const localParams = [];
           const addLocalParam = (val) => { localParams.push(val); return `$${localParams.length}`; };
           const cols = Object.keys(row);
           const vals = cols.map((c) => addLocalParam(row[c]));
-          const sets = cols.filter(c => c !== 'id').map((c) => `${c} = EXCLUDED.${c}`);
+          const sets = cols.filter(c => !conflictCols.includes(c)).map((c) => `${c} = EXCLUDED.${c}`);
           const sql = `INSERT INTO ${schemaTable} (${cols.join(', ')}) VALUES (${vals.join(', ')})
-            ON CONFLICT (id) DO UPDATE SET ${sets.join(', ')} RETURNING *`;
+            ON CONFLICT (${conflictStr}) DO UPDATE SET ${sets.join(', ')} RETURNING *`;
           const r = await pool.query(sql, localParams);
           results.push(r.rows[0]);
         }
