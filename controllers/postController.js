@@ -60,6 +60,7 @@ exports.schedulePost = async (req, res) => {
 
     // 3. Save to generated_posts
     await supabase.from('generated_posts').insert({
+      workspace_id,
       platform,
       media_prompt,
       media_url: finalMediaUrl,
@@ -73,6 +74,7 @@ exports.schedulePost = async (req, res) => {
 
     // 4. Save to post_queue
     const { error } = await supabase.from('post_queue').insert({
+      workspace_id,
       platform,
       media_url: finalMediaUrl,
       metadata: {
