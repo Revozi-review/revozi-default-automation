@@ -48,7 +48,7 @@ exports.login = async (req, res) => {
       .eq('email', email)
       .single();
     if (!user) return res.status(400).json({ error: 'Invalid credentials' });
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(400).json({ error: 'Invalid credentials' });
     // Update last_active
     await supabase.from('users').update({ last_active: new Date() }).eq('email', email);
