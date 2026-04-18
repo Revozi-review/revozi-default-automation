@@ -52,7 +52,11 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "revozi-automation" });
 });
 
-// All business routes require internal auth (called only from Revozi FastAPI proxy)
+// Auth routes are public (no internalAuth needed)
+const authRoutes = require('./routes/authRoutes');
+app.use('/auth', authRoutes);
+
+// All other business routes require internal auth (called only from Revozi FastAPI proxy)
 app.use(internalAuth);
 
 app.use("/trap", trapRoutes);
