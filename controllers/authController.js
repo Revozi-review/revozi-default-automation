@@ -51,8 +51,7 @@ exports.login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(400).json({ error: 'Invalid credentials' });
     
-    // Update last_active
-    await pool.query('UPDATE users SET last_active = NOW() WHERE email = $1', [email]);
+    // last_active column removed - not needed
     
     // Attach minimal auth context (simulate session) for downstream middleware
     const userName = user.first_name + ' ' + user.last_name;
