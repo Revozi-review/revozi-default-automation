@@ -42,22 +42,27 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', email)
-      .single();
+    const { pool } = require('../services/pgClient');
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+    
     if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+    
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(400).json({ error: 'Invalid credentials' });
+    
     // Update last_active
-    await supabase.from('users').update({ last_active: new Date() }).eq('email', email);
-  // Attach minimal auth context (simulate session) for downstream middleware
-  req.user = { id: user.id, name: user.name, email: user.email, role: user.role };
-  // Generate a simple token for the frontend (base64 encoded user info + timestamp)
-  const token = Buffer.from(JSON.stringify({ id: user.id, email: user.email, role: user.role, exp: Date.now() + 86400000 })).toString('base64');
-  res.json({ message: 'Login successful', token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    await pool.query('UPDATE users SET last_active = NOW() WHERE email = $1', [email]);
+    
+    // Attach minimal auth context (simulate session) for downstream middleware
+    const userName = user.first_name + ' ' + user.last_name;
+    req.user = { id: user.id, name: userName, email: user.email, role: user.role };
+    
+    // Generate a simple token for the frontend (base64 encoded user info + timestamp)
+    const token = Buffer.from(JSON.stringify({ id: user.id, email: user.email, role: user.role, exp: Date.now() + 86400000 })).toString('base64');
+    res.json({ message: 'Login successful', token, user: { id: user.id, name: userName, email: user.email, role: user.role } });
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });
   }
 };
