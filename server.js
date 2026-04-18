@@ -54,7 +54,6 @@ app.get("/health", (req, res) => {
 
 // Auth and Admin routes are public (no internalAuth needed)
 const authRoutes = require('./routes/authRoutes');
-const adminRoutes = require('./routes/adminRoutes');
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 
@@ -62,7 +61,7 @@ app.use('/admin', adminRoutes);
 app.use(internalAuth);
 
 app.use("/trap", trapRoutes);
-// Admin routes moved above - already registered
+app.use("/admin", adminRoutes);
 app.use("/unsubscribe", unsubscribeRoutes);
 app.use("/webhooks", twilioWebhook);
 app.use('/verify', verificationRoutes);
