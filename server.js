@@ -52,15 +52,17 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "revozi-automation" });
 });
 
-// Auth routes are public (no internalAuth needed)
+// Auth and Admin routes are public (no internalAuth needed)
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 app.use('/auth', authRoutes);
+app.use('/admin', adminRoutes);
 
 // All other business routes require internal auth (called only from Revozi FastAPI proxy)
 app.use(internalAuth);
 
 app.use("/trap", trapRoutes);
-app.use("/admin", adminRoutes);
+// Admin routes moved above - already registered
 app.use("/unsubscribe", unsubscribeRoutes);
 app.use("/webhooks", twilioWebhook);
 app.use('/verify', verificationRoutes);
