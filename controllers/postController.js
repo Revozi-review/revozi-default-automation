@@ -18,6 +18,9 @@ exports.schedulePost = async (req, res) => {
   if (!platform || !media_prompt) {
     return res.status(400).json({ error: 'Missing platform or media_prompt' });
   }
+  
+  // Get workspace_id - use default workspace for now
+  const workspace_id = req.body.workspace_id || '3fd8c7b4-03ea-42fe-9472-929d89a044dd';
 
   try {
     // 1. Generate AI Caption with multi-language support
