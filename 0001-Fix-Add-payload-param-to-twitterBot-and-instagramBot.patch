@@ -1,0 +1,40 @@
+From fa953c15d320957f03fd9b0f9d24269c3afd8232 Mon Sep 17 00:00:00 2001
+From: Revozi <support.revozi@gmail.com>
+Date: Thu, 16 Apr 2026 13:04:16 +0000
+Subject: [PATCH] Fix: Add payload param to twitterBot and instagramBot for
+ dispatcher compatibility
+
+---
+ bots/instagramBot.js | 2 +-
+ bots/twitterBot.js   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/bots/instagramBot.js b/bots/instagramBot.js
+index e1df530..20ae988 100644
+--- a/bots/instagramBot.js
++++ b/bots/instagramBot.js
+@@ -58,7 +58,7 @@ async function getRecentMedia(igId, token) {
+   return data.data;
+ }
+ 
+-async function runInstagramBot() {
++async function runInstagramBot(payload = {}) {
+   logger.info('[InstagramBot] Starting (Graph API)');
+ 
+   const { loadProviderCredentials } = require('../utils/credentials');
+diff --git a/bots/twitterBot.js b/bots/twitterBot.js
+index da54195..4f5181c 100644
+--- a/bots/twitterBot.js
++++ b/bots/twitterBot.js
+@@ -32,7 +32,7 @@ async function postTweet(text, cred) {
+   return resp.data;
+ }
+ 
+-async function runTwitterBot() {
++async function runTwitterBot(payload = {}) {
+   logger.info('[TwitterBot] Starting (Axios-based)');
+ 
+   const apiKey = process.env.TWITTER_API_KEY;
+-- 
+2.52.0
+
