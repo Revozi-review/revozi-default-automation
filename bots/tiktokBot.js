@@ -2,6 +2,7 @@ const axios = require('axios');
 const logger = require('../utils/logger');
 const { supabase } = require('../services/pgClient');
 const { autoGenerateContent } = require('../utils/autoContent');
+const Replicate = require('replicate');
 
 const tiktokAuthHeader = process.env.TIKTOK_AUTH_HEADER;
 
@@ -54,6 +55,39 @@ async function getTrendingVideo() {
   }
 }
 
+async function generateVideoWithReplicate(caption) {
+  if (!process.env.REPLICATE_API_TOKEN) {
+    logger.error('[TikTokBot] REPLICATE_API_TOKEN not set');
+    return null;
+  }
+
+  const replicate = new Replicate({
+    auth: process.env.REPLICATE_API_TOKEN,
+  });
+  
+  logger.info(`[TikTokBot] Generating video with Replicate for: ${caption}`);
+  
+  try {
+    // Using deforum/deforum_stable_diffusion for text-to-video
+    const output = await replicate.run(
+      "deforum/deforum_stable_diffusion:e22e77495f2fb83c34d5fae2ad8ab63c0a87b6b573b6208e1535b23b89ea66d6",
+      {
+        input: {
+          max_frames: 100,
+          animation_prompts: `0: ${caption}`,
+        }
+      }
+    );
+    
+    logger.info(`[TikTokBot] Video generated successfully`);
+    logger.info(`[TikTokBot] Video URL: ${JSON.stringify(output)}`);
+    return output;
+  } catch (err) {
+    logger.error(`[TikTokBot] Replicate video gen failed: ${err.message}`);
+    return null;
+  }
+}
+
 async function runTikTokBot(payload = {}) {
   logger.info('[TikTokBot] Starting');
 
@@ -62,7 +96,6 @@ async function runTikTokBot(payload = {}) {
     return;
   }
 
-  // Log what Revozi content would be posted (TikTok API requires native app auth for uploads)
   let textToPost = String(payload.caption || payload.text || '').trim();
   let queuedPost = null;
 
@@ -79,6 +112,20 @@ async function runTikTokBot(payload = {}) {
   }
 
   try {
+    // Generate video with Replicate
+    const videoUrl = await generateVideoWithReplicate(textToPost);
+    
+    if (videoUrl) {
+      logger.info(`[TikTokBot] Video ready at: ${videoUrl}`);
+      await logToSupabase({ 
+        action: 'videoGenerated', 
+        videoUrl: JSON.stringify(videoUrl), 
+        caption: textToPost 
+      });
+      // Note: TikTok API requires native app auth for actual uploads
+      // This bot generates the video but cannot upload it directly
+    }
+    
     const trending = await getTrendingVideo();
     if (trending?.id) {
       logger.info(`[TikTokBot] Engaging with trending video: ${trending.id}`);
